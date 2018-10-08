@@ -25,6 +25,7 @@ global extraOutputs;
 global FILECOUNT;
 global Left_AllVariables_Labels;
 global Right_AllVariables_Labels;
+global CycleNorms;
 
 RFootStrikeEvents =0;
 RToeOffEvents=0;
@@ -885,5 +886,7 @@ FileStruct(FILECOUNT,1).ROutputVar = ROutputVariables;
 FileStruct(FILECOUNT,1).OutputLab = OutputLabel;
 FileStruct(FILECOUNT,1).NumCycle(1) = length(LCycles);
 FileStruct(FILECOUNT,1).NumCycle(2) = length(RCycles);
+CycleNorms(:,end+1) = LCycleNorm';
+CycleNorms(:,end+1) = RCycleNorm';
 %%
-   clearvars -except FileStringArray FileStruct Target1 Num_Variables Right_AllVariables_Labels Left_AllVariables_Labels  Variables C3DCom NumberFiles thiswait pf ProblemFiles GDI_Only_Labels AllKinematics_Labels SaveFile AveFiles FILECOUNT; 
+   clearvars -except FileStringArray FileStruct Target1 Num_Variables Right_AllVariables_Labels Left_AllVariables_Labels  Variables C3DCom NumberFiles thiswait pf ProblemFiles GDI_Only_Labels AllKinematics_Labels SaveFile AveFiles FILECOUNT suffix CycleNorms; 

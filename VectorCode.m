@@ -3,7 +3,7 @@
 function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane1, norm1, ...
                                                           jointOrSegment2, plane2, norm2, ...
                                                           event1, event2, eventsMap, ...
-                                                          DataColumn, CycleNorm, GDI_ColumnA)
+                                                          DataColumn, CycleNorm, ALL_ColumnA)
 
     center = figure('visible', 'off');
     movegui(center,'center')
@@ -49,14 +49,14 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
                 row = strmatch(jointOrSegment1, Variables);
                 column_number = strmatch(plane1, planesMap);
                 label = VariableList(row, column_number+1);
-                number_in_column = min(strmatch(label, GDI_ColumnA));
+                number_in_column = min(strmatch(label, ALL_ColumnA));
 
                 array1 = DataColumn((number_in_column):(number_in_column)+ 100);
 
                 row2 = strmatch(jointOrSegment2, Variables);
                 column_number2 = strmatch(plane2, planesMap);
                 label2 = VariableList(row2, column_number2+1);
-                number_in_column2 = min(strmatch(label2, GDI_ColumnA));
+                number_in_column2 = min(strmatch(label2, ALL_ColumnA));
                 array2 = DataColumn((number_in_column2):(number_in_column2)+ 100);
 
                 array1 = array1(CycleNorm(min(strmatch(event1,eventsMap))) + 1:CycleNorm(max(strmatch(event2,eventsMap))) + 1);
@@ -70,10 +70,9 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
 
             case 'MATLAB:badsubscript'
 
-                msg = sprintf('DataColumn array is %dx%dx%d, and you attempted to access %d:%d,%d,%d', size(DataColumn,1), ...
+                msg = sprintf('DataColumn array is %dx%dx%d, and you attempted to access %d:%d,%d', size(DataColumn,1), ...
                         size(DataColumn,2), size(DataColumn,3), CycleNorm(min(strmatch(event1,eventsMap))) + 1, ...
-                        CycleNorm(max(strmatch(event2,eventsMap))) + 1, strmatch(plane1, planesMap), ...
-                        strmatch(jointOrSegment1, Variables));
+                        CycleNorm(max(strmatch(event2,eventsMap))) + 1, strmatch(plane1, planesMap));
                 causeException = MException('MATLAB:err_static_workspace_violation',msg);
                 ME = addCause(ME,causeException);
                 warning(ME.message)
@@ -100,7 +99,7 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
 
     % atan2d is bound [-180, 180], so add 360 to angles less than 0
 
- % These are the values used for the bins. You can quickly adjust the size of each bin here
+    % These are the values used for the bins. You can quickly adjust the size of each bin here
     binAMin1 = 0;        binAMax1 = 22.5;       binAMin2 = 180;        binAMax2 = 202.5;
     binBMin1 = 22.5;     binBMax1 = 67.5;       binBMin2 = 202.5;      binBMax2 = 247.5;
     binCMin1 = 67.5;     binCMax1 = 90;         binCMin2 = 247.5;      binCMax2 = 270;
@@ -200,7 +199,6 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
                 phase(k) = 4;
                 
             end 
-
     end
 
     %% Colors for each section

@@ -889,4 +889,4 @@ FileStruct(FILECOUNT,1).NumCycle(2) = length(RCycles);
 CycleNorms(:,end+1) = LCycleNorm';
 CycleNorms(:,end+1) = RCycleNorm';
 %%
-   clearvars -except FileStringArray FileStruct Target1 Num_Variables Right_AllVariables_Labels Left_AllVariables_Labels  Variables C3DCom NumberFiles thiswait pf ProblemFiles GDI_Only_Labels AllKinematics_Labels SaveFile AveFiles FILECOUNT suffix CycleNorms; 
+   %clearvars -except FileStringArray FileStruct Target1 VariableListFile Num_Variables Right_AllVariables_Labels Left_AllVariables_Labels  Variables C3DCom NumberFiles thiswait pf ProblemFiles GDI_Only_Labels AllKinematics_Labels SaveFile AveFiles FILECOUNT suffix CycleNorms; 

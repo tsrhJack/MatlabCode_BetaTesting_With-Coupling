@@ -19,6 +19,6 @@ function saveFigure(subjectID, subjectFolder, fileName, mainFigure,figureName, s
         end
         close(mainFigure)
     else
-        warning('Invalid figure for file %s (R Side, %s %s). Moving on to next side...', currentFile, currentVariable1{:}, currentVariable2{:})
+        warning('Invalid figure for file %s', fileName)
     end
 end

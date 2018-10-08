@@ -6,20 +6,21 @@ clear all
 close all
 clc
 
-global filename DataArray FILECOUNT FileStruct Variables VariableStrings VariableListFile OutputMeasures SaveFile Normalization extracode extraOutputs AtAngle JointChosen PlaneChosen
+global filename   FileStruct Variables VariableStrings VariableListFile OutputMeasures SaveFile Normalization extracode extraOutputs AtAngle JointChosen PlaneChosen
 
 tic
-
+global folderLocation;
+folderLocation = 'W:\Movement Science Lab\Staff\GHS\Results\FAI Squatting\Variable Pull';
 % [filename,filepath] = uigetfile('*.xlsx', 'FILE LIST: Select your batch processing file list','c:\temp\');
-[filename,filepath] = uigetfile('*.xlsx', 'FILE LIST: Select your batch processing file list','W:\Movement Science Lab\Staff\');
+[filename,filepath] = uigetfile('*.xlsx', 'FILE LIST: Select your batch processing file list', folderLocation);
 CompleteFileName = strcat(filepath,filename);
 
 % [fname,path,filter] = uigetfile([filepath,'*.xlsx'], 'VARIABLE LIST:Select your variable list','c:\temp\');
-[fname,path,filter] = uigetfile([filepath,'*.xlsx'], 'VARIABLE LIST:Select your variable list',filepath);
+[fname,path,filter] = uigetfile([filepath,'*.xlsx'], 'VARIABLE LIST:Select your variable list', folderLocation);
 VariableListFile = [path,fname];
 
 % [sfname,spath,sfilter]=uiputfile([filepath,'*.xlsx'], 'SAVE FILE: Select your output file save file','c:\temp\');
-[sfname,spath,sfilter]=uiputfile([filepath,'*.xlsx'], 'SAVE FILE: Select your output file save file',filepath);
+[sfname,spath,sfilter]=uiputfile([filepath,'*.xlsx'], 'SAVE FILE: Select your output file save file', folderLocation);
 SaveFile = [spath,sfname];
 
 str = {'1. FS-OFO-OFC-TO-FS  ex. Typical Gait Cycle (bilateral steps',...
@@ -37,7 +38,6 @@ Normalization=s;
 Checkfiles = questdlg('Would you like to check your filelist first?',...
    'Check Files','Yes','No','Yes');
 Checkfiles =0;
-
 AveFiles = questdlg('Would you like to average your data by subject?',...
     'Average Files','By Context', 'Across Sides', 'No','By Context');
 
@@ -52,12 +52,12 @@ extracode=extras;
 
 if extracode == 1
     extrafilename = 'W:\Movement Science Lab\Staff\GHS\FAI Grant\MATLAB\StepDown60_VariableList.xlsx';
-    [num1, extraOutputs]=xlsread(extrafilename,'Measures','A:C');
+    [~, extraOutputs]=xlsread(extrafilename,'Measures','A:C');
 end
 
 if extracode == 2
     extrafilename = 'W:\Movement Science Lab\Staff\GHS\Results\FAI Squatting\Variable Pull\AtSquatDepth_VariableList.xlsx';
-    [num1, extraOutputs]=xlsread(extrafilename,'Measures','A:C');
+    [~, extraOutputs]=xlsread(extrafilename,'Measures','A:C');
 end
 
 if extracode == 3
@@ -66,7 +66,7 @@ end
 
 if extracode == 4
     [AtAngle] = inputdlg('What angle would you like variables to be pulled at?','Joint Angle',1);
-    str = {'Pelvis','Hip','Knee','Ankle','Foot Progression'};
+    str = {'Trunk','Pelvis','Hip','Knee','Ankle','Foot Progression'};
     [JointChosen] = listdlg('ListString',str,'SelectionMode','single','OKString','Select',...
     'ListSize',[450 160],'PromptString','Select the joint.',...
     'Name','Choose Your Joint');
@@ -75,19 +75,20 @@ if extracode == 4
     'ListSize',[450 160],'PromptString','Select the plane.',...
     'Name','Choose Your Plane');
     extrafilename = 'W:\Movement Science Lab\Staff\GHS\Results\FAI Squatting\Variable Pull\AtJointAngle_VariableList.xlsx';
-    [num1, extraOutputs]=xlsread(extrafilename,'Measures','A:C');
+    [~, extraOutputs]=xlsread(extrafilename,'Measures','A:C');
 end
 
 %% Use this section to check that all files in the file list exist%
 
 columnheadings = {'Filename', 'ID', 'Last', 'First', 'Group', 'Session','Side','Cycle','Study'};
 
+global VariableList
 [num2,VariableList]=xlsread(VariableListFile,'Variables');
 Variables = VariableList(:,1);
 VariableStrings = VariableList(:,2:4);
 Num_Variables = size(Variables,1);
 
-[num1,OutputMeasures]=xlsread(VariableListFile,'Measures','A:G');
+[~,OutputMeasures]=xlsread(VariableListFile,'Measures','A:G');
 [num1, FileStringArray]=xlsread(CompleteFileName,'FileList','A:J');
 num1_1 = num2str(num1);
 thisnum = strcmp(FileStringArray(:,2),'');
@@ -117,7 +118,7 @@ if strcmp(Checkfiles,'Yes')
         return
     end
 end
-% Update this with the ones used in subjectdata
+% Update this with the ones used in subject data
 % FileStruct = struct('LeftGDI_Only',{},'RightGDI_Only',{},'Left_AllKinematics',{},'Right_AllKinematics',{},'LOutputVar',{},'ROutputVar',{},'OutputLab',{},'Left_AllVar',{},'Right_AllVar',{});
 FileStruct(1).LeftGDI_Only=[];
 FileStruct(1).RightGDI_Only=[];

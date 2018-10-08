@@ -1,0 +1,120 @@
+function []= TimeNorm(subnum)
+
+    % Created by Kirsten TUlchin-Francis on July 6, 2015
+    % Last Updated: July 6, 2015
+    % This m file will take all angular variables and time normalize them to the gait
+    % cycle.
+
+    global Dynam
+    
+    sn = subnum;
+    
+for f = 1:length(Dynam(sn,1).file); % loops through all files
+    Dynam(sn,1).file(f,1).LeftVector = [];
+    Dynam(sn,1).file(f,1).RightVector = [];
+    Dynam(sn,1).file(f,1).LeftPIGVector = [];
+    Dynam(sn,1).file(f,1).RightPIGVector = [];
+end
+
+for m=1:length(Dynam(sn,1).file);% loops through all files
+        
+    LCycles = Dynam(sn,1).file(m,1).LeftGaitCycle; % creates array of %GCs Left
+    RCycles = Dynam(sn,1).file(m,1).RightGaitCycle; % Creates array of %GCs Right
+    LStart = int16(LCycles(1,1))-Dynam(sn,1).file(m,1).Startframe; %start of Left gait cycle
+    LEnd = int16(LCycles(1,5))-Dynam(sn,1).file(m,1).Startframe; %end of Left gait cycle
+    RStart = int16(RCycles(1,1))-Dynam(sn,1).file(m,1).Startframe; % start of Right GC
+    REnd = int16(RCycles(1,5))-Dynam(sn,1).file(m,1).Startframe; % end of Right GC
+    AngNames = fieldnames(Dynam(sn,1).file(m,1).Angles);
+    PIGnames = fieldnames(Dynam(sn,1).file(m,1).PIG);
+    
+    for a = 1:length(AngNames) % loops for count of angle fields
+        % for each fieldname in DS.Angles, cut the variable from the start
+        % to the end, 
+        v = cell2mat(genvarname(AngNames(a)));
+        DataCycle = Dynam(sn,1).file(m,1).Angles.(v); %CutArray to match cycle
+        LDataCycle = DataCycle([LStart:LEnd],:,:);
+        
+        sz = length(LDataCycle);
+        x=0:1:(sz-1);
+        x = (x/(sz-1))*100;
+       
+        for i=1:3
+            y=LDataCycle(:,i);
+            for xx=0:100
+                LGaitCycle(xx+1,i)=spline(x,y,xx);
+            end
+        end
+        
+        RDataCycle = DataCycle([RStart:REnd],:,:);
+        
+        sz = length(RDataCycle);
+        x=0:1:(sz-1);
+        x = (x/(sz-1))*100;
+     
+        for i=1:3
+            y=RDataCycle(:,i);
+            for xx=0:100
+                RGaitCycle(xx+1,i)=spline(x,y,xx);
+            end
+        end
+  % need to save LDataCycle, RDataCycle to
+  % Dynam(sn,1).file(m,1).Left/RightNormAng.<nameoffield>
+  
+  Dynam(sn,1).file(m,1).LeftNormAng.(v) = LGaitCycle;
+  Dynam(sn,1).file(m,1).RightNormAng.(v) = RGaitCycle;
+  Dynam(sn,1).file(m,1).LeftVector = [Dynam(sn,1).file(m,1).LeftVector;LGaitCycle(:,1);LGaitCycle(:,2);LGaitCycle(:,3)];
+  Dynam(sn,1).file(m,1).RightVector = [Dynam(sn,1).file(m,1).RightVector;RGaitCycle(:,1);RGaitCycle(:,2);RGaitCycle(:,3)];
+    end
+    
+    for a = 1:length(PIGnames) % loops for count of PIG angle fields
+        % for each fieldname in DS.PIG, cut the variable from the start
+        % to the end, 
+        v = cell2mat(genvarname(PIGnames(a)));
+        LECycle = Dynam(sn,1).file(m,1).PIG.(v); %CutArray to match cycle
+        LLECycle = LECycle([LStart:LEnd],:,:);
+        
+        sz = length(LLECycle);
+        x=0:1:(sz-1);
+        x = (x/(sz-1))*100;
+       
+        for i=1:3
+            y=LLECycle(:,i);
+            for xx=0:100
+                LPIGCycle(xx+1,i)=spline(x,y,xx);
+            end
+        end
+        
+        RLECycle = LECycle([RStart:REnd],:,:);
+        
+        sz = length(RLECycle);
+        x=0:1:(sz-1);
+        x = (x/(sz-1))*100;
+     
+        for i=1:3
+            y=RLECycle(:,i);
+            for xx=0:100
+                RPIGCycle(xx+1,i)=spline(x,y,xx);
+            end
+        end
+  % need to save LDataCycle, RDataCycle to
+  % Dynam(sn,1).file(m,1).Left/RightNormAng.<nameoffield>
+  
+  Dynam(sn,1).file(m,1).LeftNormPIG.(v) = LPIGCycle;
+  Dynam(sn,1).file(m,1).RightNormPIG.(v) = RPIGCycle;
+  isAnkle = findstr(char(PIGnames(a)),'Ankle');
+  if isempty(isAnkle)
+  Dynam(sn,1).file(m,1).LeftPIGVector = [Dynam(sn,1).file(m,1).LeftN;LPIGCycle(:,3)];
+  Dynam(sn,1).file(m,1).RightPIGVector = [Dynam(sn,1).file(m,1).RightPIGVector;RPIGCycle(:,3)];
+  else
+  Dynam(sn,1).file(m,1).LeftPIGVector = [Dynam(sn,1).file(m,1).LeftPIGVector;LPIGCycle(:,1);LPIGCycle(:,3)];
+  Dynam(sn,1).file(m,1).RightPIGVector = [Dynam(sn,1).file(m,1).RightPIGVector;RPIGCycle(:,1);RPIGCycle(:,3)];
+ 
+  end
+  
+  end
+    
+
+    
+end
+end
+

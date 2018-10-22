@@ -1,7 +1,7 @@
 function [LOutputVariables,ROutputVariables,OutputLabel] = Readvarblist_3_2017(DataArray,LCycles,RCycles,Startframe,LeftGaitCycle,RightGaitCycle,LCycleNorm,RCycleNorm)
 
 global Variables
-global OutputMeasures %assign this a value
+global OutputMeasures
 global Normalization
 global FILECOUNT
 
@@ -12,8 +12,8 @@ planeset = {'Sagittal','Coronal','Transverse'};
 planevalues = num2cell([1,2,3]);
 planemap = containers.Map(planeset,planevalues);
 
-measureset={'Mean','Maximum','Minimum','Value','Integral','ROM'};
-measurevalues = num2cell([1,2,3,4,5,6])';
+measureset={'Mean','Maximum','Minimum','Value','Integral'};
+measurevalues = num2cell([1,2,3,4,5])';
 measuremap = containers.Map(measureset,measurevalues);
 
 if Normalization == 5
@@ -43,17 +43,17 @@ variableset = Variables;
 variablevalues = num2cell([1:length(Variables)]);
 variablemap = containers.Map(variableset,variablevalues);
 
-for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for CalcGait Only
+for i=1:(length(OutputMeasures)) %Normally should be to OM, changed to -1 for CalcGait Only
    Varb = OutputMeasures(i,1);
    firstlet = char(Varb);
    firstlet = firstlet(1);
-%    if strcmp(firstlet,'A')
-%         LVarb = OutputMeasures(i,1);
-%         RVarb = OutputMeasures(i,1);
-%    else
+   if strcmp(firstlet,'A')
+        LVarb = OutputMeasures(i,1);
+        RVarb = OutputMeasures(i,1);
+   else
        LVarb = strcat('L',OutputMeasures(i,1));
        RVarb= strcat('R',OutputMeasures(i,1));
-%    end
+   end
     thisLangle = variablemap(LVarb{1});
     thisRangle = variablemap(RVarb{1});
     
@@ -69,19 +69,19 @@ for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for Ca
     thisstop = timemap(Stopvarb{1});
     
     if thisstop == 11;
-        thisstop = thisstart;
+            thisstop = thisstart;
     end
-    
-    %     if thisstop == 1;
-    %         thisstart = 1;
-    %         thisstop = 3;
-    %     end
+   
+%     if thisstop == 1;
+%         thisstart = 1;
+%         thisstop = 3;
+%     end
     
     OPLabel = OutputMeasures(i,6);
     StrTiming = OutputMeasures(i,7);
     
     newvariables(i,:) = [thisLangle,thisRangle,thisplane,thismeasure,thisstart,thisstop];
-    if isequal(thismeasure,5) %If impulse measure used time based
+    if isequal(thismeasure,5) %If impulse measure used time based 
         CalculatedVariable = GetMeasureTimeBased(FILECOUNT,DataArray,LCycles,RCycles,thisLangle,thisRangle,thisplane,thismeasure,thisstart,thisstop,Startframe);
         LOutputVariables(1,j) = CalculatedVariable(1);
         ROutputVariables(1,j) = CalculatedVariable(2);
@@ -91,11 +91,6 @@ for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for Ca
         ROutputVariables(1,j) = CalculatedVariable(2);
     end
     OutputLabel(1,j) = OPLabel;
-    if strcmp(OutputMeasures{1,5},'ROM')
-        OPLabel2 = char(OPLabel);
-        label = {OPLabel2(1:cellfun('length',OPLabel)-3)};
-        OutputLabel(1,j)=strcat(label,'Max');
-    end
     
     k=findstr(OutputMeasures{i,1},'Moment'); %if its a moment - convert to Nm instead of Nmm
     
@@ -107,33 +102,19 @@ for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for Ca
     j=j+1;
     
     if strcmp(StrTiming,'Yes')
-        if strcmp(measure,'ROM') == 1
-            if size(CalculatedVariable,2) == 2          %%added
-                LOutputVariables(1,j) = CalculatedVariable(1);
-                ROutputVariables(1,j) = CalculatedVariable(2);
-            else
-                LOutputVariables(1,j)=CalculatedVariable(3);
-                ROutputVariables(1,j)=CalculatedVariable(4);
-                OutputLabel(1,j)=strcat('Time',OutputLabel(1,j-1));
-                j=j+1;
-                
-                LOutputVariables(1,j)=CalculatedVariable(5);
-                ROutputVariables(1,j)=CalculatedVariable(6);
-                OutputLabel(1,j)=strcat(label,'Min');
-                j=j+1;
-                
-                LOutputVariables(1,j)=CalculatedVariable(7);
-                ROutputVariables(1,j)=CalculatedVariable(8);
-                OutputLabel(1,j)=strcat('Time',OutputLabel(1,j-1));
-                j=j+1;
-                
-                LOutputVariables(1,j)=CalculatedVariable(9);
-                ROutputVariables(1,j)=CalculatedVariable(10);
-                OutputLabel(1,j)=strcat(label,'ROM');
-                j=j+1;
+        LOutputVariables(1,j)=CalculatedVariable(3);
+        ROutputVariables(1,j)=CalculatedVariable(4);
+        OutputLabel(1,j)=strcat('Time',OPLabel);
+        j=j+1;
+        if isequal(thisstart,1)
+        else
+            if thisstart >5 
+            LOutputVariables(1,j)=CalculatedVariable(3)+int16(round(LCycleNorm(1,thisstart)*0.5));
+            ROutputVariables(1,j)=CalculatedVariable(4)+int16(round(RCycleNorm(1,thisstart)*0.5));
             end
         end
     end
+end
 
 % This variable is for CalcGait and GCF Only
 % MaxAnkleMoment = GetMeasures(LeftGaitCycle,RightGaitCycle,LCycleNorm,RCycleNorm,17,18,1,2,1,5);

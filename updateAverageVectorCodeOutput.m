@@ -7,7 +7,7 @@ function updateAverageVectorCodeOutput(outputAverageVectorCode, header, currentV
     outputAverageVectorCode{vectorCodeOutputRowCounter, length(header)+2} = currentPlane1{:};
     outputAverageVectorCode{vectorCodeOutputRowCounter, length(header)+3} = currentVariable2{:};
     outputAverageVectorCode{vectorCodeOutputRowCounter, length(header)+4} = currentPlane2{:};
-
+    
     % Bin Counts Cycle
     outputAverageVectorCode{vectorCodeOutputRowCounter,length(header)+5} = bincounts(1,1);
     outputAverageVectorCode{vectorCodeOutputRowCounter,length(header)+6} = bincounts(1,2);

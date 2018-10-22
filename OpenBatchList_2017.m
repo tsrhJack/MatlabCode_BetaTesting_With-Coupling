@@ -6,21 +6,20 @@ clear all
 close all
 clc
 
-global filename   FileStruct Variables VariableStrings VariableListFile OutputMeasures SaveFile Normalization extracode extraOutputs AtAngle JointChosen PlaneChosen
+global filename FileStruct Variables VariableStrings VariableListFile OutputMeasures SaveFile Normalization extracode extraOutputs AtAngle JointChosen PlaneChosen
 
 tic
-global folderLocation;
-folderLocation = 'W:\Movement Science Lab\Staff\GHS\Results\FAI Squatting\Variable Pull';
+
 % [filename,filepath] = uigetfile('*.xlsx', 'FILE LIST: Select your batch processing file list','c:\temp\');
-[filename,filepath] = uigetfile('*.xlsx', 'FILE LIST: Select your batch processing file list', folderLocation);
+[filename,filepath] = uigetfile('*.xlsx', 'FILE LIST: Select your batch processing file list', 'W:\Movement Science Lab\Staff\');
 CompleteFileName = strcat(filepath,filename);
 
 % [fname,path,filter] = uigetfile([filepath,'*.xlsx'], 'VARIABLE LIST:Select your variable list','c:\temp\');
-[fname,path,filter] = uigetfile([filepath,'*.xlsx'], 'VARIABLE LIST:Select your variable list', folderLocation);
+[fname,path,filter] = uigetfile([filepath,'*.xlsx'], 'VARIABLE LIST:Select your variable list', filepath);
 VariableListFile = [path,fname];
 
 % [sfname,spath,sfilter]=uiputfile([filepath,'*.xlsx'], 'SAVE FILE: Select your output file save file','c:\temp\');
-[sfname,spath,sfilter]=uiputfile([filepath,'*.xlsx'], 'SAVE FILE: Select your output file save file', folderLocation);
+[sfname,spath,sfilter]=uiputfile([filepath,'*.xlsx'], 'SAVE FILE: Select your output file save file', filepath);
 SaveFile = [spath,sfname];
 
 str = {'1. FS-OFO-OFC-TO-FS  ex. Typical Gait Cycle (bilateral steps',...

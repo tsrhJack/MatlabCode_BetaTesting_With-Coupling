@@ -77,7 +77,7 @@ if Normalization == 1
 end
 
 C3DCom = c3dserver;
- [NumberFiles,holder]=size(FileStringArray);
+[NumberFiles,holder]=size(FileStringArray);
 thiswait = waitbar(0,'Processing')
 for i=1:NumberFiles
 % for i = 28:NumberFiles

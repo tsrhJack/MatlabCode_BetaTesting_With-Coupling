@@ -59,7 +59,9 @@ function [LGaitCycle,RGaitCycle] = TimeNormalizeData_2017(LCycles,RCycles, DataA
         for i=1:3
             y=LDataCycle(:,i,h);
             for xx=0:100
+                warning off
                 LGaitCycle(xx+1,i,h)=spline(x,y,xx);
+                warning on
              end
         end
     end
@@ -72,7 +74,9 @@ function [LGaitCycle,RGaitCycle] = TimeNormalizeData_2017(LCycles,RCycles, DataA
         for i=1:3
             y=RDataCycle(:,i,h);
             for xx=0:100
+                warning off
                 RGaitCycle(xx+1,i,h)=spline(x,y,xx);
+                warning on
             end
         end
     end

@@ -12,8 +12,8 @@ planeset = {'Sagittal','Coronal','Transverse'};
 planevalues = num2cell([1,2,3]);
 planemap = containers.Map(planeset,planevalues);
 
-measureset={'Mean','Maximum','Minimum','Value','Integral','ROM'};
-measurevalues = num2cell([1,2,3,4,5,6])';
+measureset={'Mean','Maximum','Minimum','Value','Integral'};
+measurevalues = num2cell([1,2,3,4,5])';
 measuremap = containers.Map(measureset,measurevalues);
 
 timeset = {'Foot Strike','Opposite Foot Off','Opposite Foot Strike','Foot Off','33Stance','50Stance','66Stance','50Swing','90GaitCycle','NA'};
@@ -24,8 +24,7 @@ variableset = Variables;
 variablevalues = num2cell([1:length(Variables)]);
 variablemap = containers.Map(variableset,variablevalues);
 
- for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for CalcGait Only
-%for i = 17
+for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for CalcGait Only
    Varb = OutputMeasures(i,1);
    firstlet = char(Varb);
    firstlet = firstlet(1);
@@ -68,25 +67,18 @@ variablemap = containers.Map(variableset,variablevalues);
     StrTiming = OutputMeasures(i,7);
     
     newvariables(i,:) = [thisLangle,thisRangle,thisplane,thismeasure,thisstart,thisstop];
+    
+        CalculatedVariable = GetMeasures(LeftGaitCycle,RightGaitCycle,LCycleNorm,RCycleNorm,thisLangle,thisRangle,thisplane,thismeasure,thisstart,thisstop);
+        LOutputVariables(1,j) = CalculatedVariable(1);
+        ROutputVariables(1,j) = CalculatedVariable(2);
+
     if isequal(thismeasure,5) %If impulse measure used time based 
         CalculatedVariable = GetMeasureTimeBased(FILECOUNT,DataArray,LCycles,RCycles,thisLangle,thisRangle,thisplane,thismeasure,thisstart,thisstop,Startframe);
         LOutputVariables(1,j) = CalculatedVariable(1);
         ROutputVariables(1,j) = CalculatedVariable(2);
-    else
-        CalculatedVariable = GetMeasures(LeftGaitCycle,RightGaitCycle,LCycleNorm,RCycleNorm,thisLangle,thisRangle,thisplane,thismeasure,thisstart,thisstop);
-        LOutputVariables(1,j) = CalculatedVariable(1);
-        ROutputVariables(1,j) = CalculatedVariable(2);
     end
-    
     OutputLabel(1,j) = OPLabel;
     
-    if strcmp(OutputMeasures{i,5},'ROM')        %%added
-            OPLabel2 = char(OPLabel);
-            if strcmp(OPLabel2(end-2:end),'ROM')
-                label = {OPLabel2(1:cellfun('length',OPLabel)-3)};
-                OutputLabel(1,j)=strcat(label,'Max');
-            end
-    end
     k=findstr(OutputMeasures{i,1},'Moment'); %if its a moment - convert to Nm instead of Nmm
     
     if k >0
@@ -97,36 +89,16 @@ variablemap = containers.Map(variableset,variablevalues);
     j=j+1;
     
     if strcmp(StrTiming,'Yes')
-        if strcmp(measure,'ROM')
-            if size(CalculatedVariable,2) == 2          %%added if statement
-                LOutputVariables(1,j) = CalculatedVariable(1);
-                ROutputVariables(1,j) = CalculatedVariable(2);
-            else
-                LOutputVariables(1,j)=CalculatedVariable(3);
-                ROutputVariables(1,j)=CalculatedVariable(4);
-                OutputLabel(1,j)=strcat('Time',OutputLabel(1,j-1));
-                j=j+1;
-                
-                LOutputVariables(1,j)=CalculatedVariable(5);
-                ROutputVariables(1,j)=CalculatedVariable(6);
-                OutputLabel(1,j)=strcat(label,'Min');
-                j=j+1;
-                
-                LOutputVariables(1,j)=CalculatedVariable(7);
-                ROutputVariables(1,j)=CalculatedVariable(8);
-                OutputLabel(1,j)=strcat('Time',OutputLabel(1,j-1));
-                j=j+1;
-                
-                LOutputVariables(1,j)=CalculatedVariable(9);
-                ROutputVariables(1,j)=CalculatedVariable(10);
-                OutputLabel(1,j)=strcat(label,'ROM');
-                j=j+1;
-            end
+        LOutputVariables(1,j)=CalculatedVariable(3);
+        ROutputVariables(1,j)=CalculatedVariable(4);
+        OutputLabel(1,j)=strcat('Time',OPLabel);
+        j=j+1;
+        if isequal(thisstart,1) || isequal(thisstart,10) 
         else
-            LOutputVariables(1,j)=CalculatedVariable(3);
-            ROutputVariables(1,j)=CalculatedVariable(4);
-            OutputLabel(1,j)=strcat('Time',OPLabel);     %%changed from OPLabel
-            j=j+1;
+%             if thisstart >5 
+%             LOutputVariables(1,j)=CalculatedVariable(3)+int16(round(LCycleNorm(1,thisstart)*0.5));
+%             ROutputVariables(1,j)=CalculatedVariable(4)+int16(round(RCycleNorm(1,thisstart)*0.5));
+%             end
         end
     end
 end

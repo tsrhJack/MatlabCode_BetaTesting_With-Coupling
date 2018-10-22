@@ -94,7 +94,7 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
     end
 
 
-    arrayLength = length(array1) - 1;
+    arrayLength = length(array1);
 
 
     % atan2d is bound [-180, 180], so add 360 to angles less than 0
@@ -115,13 +115,13 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
     array1 = array1 / norm1;
     array2 = array2 / norm2;
 
-    [R,p_value] = corrcoef(array1,array2); % Determines the correlation coeff 
+    %[R,p_value] = corrcoef(array1,array2); % Determines the correlation coeff 
     % the correlation p-value of two input arrays
-    R_var = R(1,2); %takes the x-y correlation
-    p_var = p_value(1,2); %takes the x-y p-value
+    %R_var = R(1,2); %takes the x-y correlation
+    %p_var = p_value(1,2); %takes the x-y p-value
 
-    theta = zeros(arrayLength,1);
-    for k=1:(arrayLength)
+    theta = zeros(arrayLength-1,1);
+    for k=1:(arrayLength)-1
 
         %Theta is a 1D matrix of values. The next line takes the inverse tangent
         %of the change in angle2 over the change in angle1
@@ -135,23 +135,23 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
 
     % atan2d is bound [-180, 180], so add 360 to angles less than 0
     theta = theta + (theta < 0)*360;
-    t = 0:(arrayLength);    %  Array used for plotting
+    thetaLength = length(theta);
+    t = 0:(arrayLength-1);    %  Array used for plotting
 
     % Instantiates arrays to preallocate memory (runs more efficiently)
     % These arrays keep track of what bin each couple fell into at each
     % moment in time (but keep in mind if time normalization has been run
     % in the getEvents() function
-    phase = zeros(1,arrayLength);
-    proximalDominantInPhase = zeros(1,arrayLength);
-    inPhase = zeros(1,arrayLength);
-    distalDominantInPhase = zeros(1,arrayLength);
-    distalDominantAntiPhase = zeros(1,arrayLength);
-    antiPhase = zeros(1,arrayLength);
-    proximalDominantAntiPhase = zeros(1,arrayLength);
-
+    phase = zeros(1,thetaLength);
+    proximalDominantInPhase = zeros(1,thetaLength);
+    inPhase = zeros(1,thetaLength);
+    distalDominantInPhase = zeros(1,thetaLength);
+    distalDominantAntiPhase = zeros(1,thetaLength);
+    antiPhase = zeros(1,thetaLength);
+    proximalDominantAntiPhase = zeros(1,thetaLength);
 
     % Assigns the coupling angle to a bin at each point in time
-    for k=1:(arrayLength)
+    for k=1:(thetaLength)
 
             % Proximal-Dominant In-Phase
             if (theta(k) >= binAMin1 && theta(k) <= binAMax1 || theta(k) >= binAMin2 && theta(k) <= binAMax2)
@@ -164,7 +164,6 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
 
                 phase(k) = 2;
                 inPhase(k) = 1;
-
 
             % Distal-Dominant In-Phase
             elseif (theta(k) > binCMin1 && theta(k) < binCMax1 || theta(k) > binCMin2 && theta(k) < binCMax2)
@@ -191,10 +190,12 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
                 proximalDominantAntiPhase(k) = 1;
 
             elseif theta(k) == 0 || theta(k) == 180
+
                 proximalDominantInPhase(k) = 1;
                 phase(k) = 1;
 
             elseif theta(k) == 90 || theta(k) == 270
+
                 distalDominantAntiPhase(k) = 1;
                 phase(k) = 4;
                 
@@ -240,38 +241,40 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
 
     %% Creates the color bar under the x-axis
     changeLocations = zeros(100,1);
-    for i = 2:arrayLength()
+    for i = 2:thetaLength
 
         if phase(i) ~= phase(i-1)
 
-            changeLocations(i-1) = i-1;
+            changeLocations(i-1) = i-1;% We subtract 1 because the phase vector is from 1:101, but the t vector is from 0:100 
 
         end
 
     end
-    changeLocations(end) = length(phase);
     changeLocations = changeLocations(changeLocations ~= 0);
 
-    for ii = 1: length(changeLocations)
+    X = [0 0 changeLocations(1) changeLocations(1)];
+    Y = [yMin-1 y_limit_bottom y_limit_bottom yMin-1];
+    switch phase(1)
+        case 1   
+            patch(X,Y,colors{1})
+        case 2
+            patch(X,Y,colors{2})
+        case 3
+            patch(X,Y,colors{3})
+        case 4
+            patch(X,Y,colors{4})
+        case 5
+            patch(X,Y,colors{5})
+        case 6
+            patch(X,Y,colors{6})
+        otherwise
+            error('phase vector at %d is %d and should be in the range 1-6!', 1, phase(1))
+    end
 
-        if ii == 1
-
-            X = [0 0 changeLocations(ii) changeLocations(ii)];
-            Y = [yMin-1 y_limit_bottom y_limit_bottom yMin-1];
-
-        elseif changeLocations(ii) == 0
-            
-            X = [arrayLength arrayLength changeLocations(ii-1) changeLocations(ii-1)];
-            Y = [yMin-1 y_limit_bottom y_limit_bottom yMin-1];
-
-        else
-            
-            X = [changeLocations(ii) changeLocations(ii) changeLocations(ii-1) changeLocations(ii-1)];
-            Y = [yMin-1 y_limit_bottom y_limit_bottom yMin-1];
-
-        end
-
-        switch phase(changeLocations(ii))
+    for ii = 1:length(changeLocations)-1
+        X = [changeLocations(ii) changeLocations(ii) changeLocations(ii+1) changeLocations(ii+1)];
+        Y = [yMin-1 y_limit_bottom y_limit_bottom yMin-1];
+        switch phase(changeLocations(ii+1))
             case 1   
                 patch(X,Y,colors{1})
             case 2
@@ -288,6 +291,24 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
                 error('phase vector at %d is %d and should be in the range 1-6!', ii, phase(ii))
         end
     end
+
+    X = [changeLocations(end) changeLocations(end) 100 100];
+    Y = [yMin-1 y_limit_bottom y_limit_bottom yMin-1];
+    switch phase(end)
+        case 1   
+            patch(X,Y,colors{1})
+        case 2
+            patch(X,Y,colors{2})
+        case 3
+            patch(X,Y,colors{3})
+        case 4
+            patch(X,Y,colors{4})
+        case 5
+            patch(X,Y,colors{5})
+        case 6
+            patch(X,Y,colors{6})
+    end
+       
     hold off;
 
     %% Adds angle data to plot

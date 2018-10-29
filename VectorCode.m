@@ -5,7 +5,7 @@ function [mainFigure, figureName, bincounts] = VectorCode(jointOrSegment1, plane
                                                           event1, event2, eventsMap, ...
                                                           DataColumn, CycleNorm, ALL_ColumnA)
 
-    center = figure('visible', 'off');
+    center = figure('visible', 'off'); %Random Change 2
     movegui(center,'center')
     close
 

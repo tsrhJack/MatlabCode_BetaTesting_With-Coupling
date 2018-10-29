@@ -123,8 +123,8 @@ variablemap = containers.Map(variableset,variablevalues);
                 j=j+1;
             end
         else
-            LOutputVariables(1,j)=CalculatedVariable(3);
-            ROutputVariables(1,j)=CalculatedVariable(4);
+            LOutputVariables(1,j)=CalculatedVariable(1);
+            ROutputVariables(1,j)=CalculatedVariable(2);
             OutputLabel(1,j)=strcat('Time',OPLabel);     %%changed from OPLabel
             j=j+1;
         end

@@ -90,11 +90,14 @@ for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for Ca
         LOutputVariables(1,j) = CalculatedVariable(1);
         ROutputVariables(1,j) = CalculatedVariable(2);
     end
+    
     OutputLabel(1,j) = OPLabel;
     if strcmp(OutputMeasures{1,5},'ROM')
         OPLabel2 = char(OPLabel);
-        label = {OPLabel2(1:cellfun('length',OPLabel)-3)};
-        OutputLabel(1,j)=strcat(label,'Max');
+        if strcmp(OPLabel2(end-2:end),'ROM')
+                label = {OPLabel2(1:cellfun('length',OPLabel)-3)};
+                OutputLabel(1,j)=strcat(label,'Max');
+        end
     end
     
     k=findstr(OutputMeasures{i,1},'Moment'); %if its a moment - convert to Nm instead of Nmm
@@ -132,6 +135,11 @@ for i=1:(size(OutputMeasures,1)) %Normally should be to OM, changed to -1 for Ca
                 OutputLabel(1,j)=strcat(label,'ROM');
                 j=j+1;
             end
+        else
+            LOutputVariables(1,j)=CalculatedVariable(1);
+            ROutputVariables(1,j)=CalculatedVariable(2);
+            OutputLabel(1,j)=strcat('Time',OPLabel);     %%changed from OPLabel
+            j=j+1;
         end
     end
 

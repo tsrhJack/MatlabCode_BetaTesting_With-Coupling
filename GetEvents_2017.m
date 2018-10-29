@@ -853,7 +853,7 @@ if Normalization == 3 || Normalization == 4 || Normalization == 7
    [LOutputVariables,ROutputVariables,OutputLabel] = Readvarblist_4_2017(DataArray,LCycles,RCycles,Startframe,LeftGaitCycle,RightGaitCycle,LCycleNorm,RCycleNorm);
 end
 
-if Normalization == 5 || Normalization == 6 || Normalization == 8 || Normalization == 9 ||Normalization==10 || Normalization == 11
+if Normalization == 5 || Normalization == 6 || Normalization == 8 || Normalization == 9 || Normalization == 10 || Normalization == 11
    [LOutputVariables,ROutputVariables,OutputLabel] = Readvarblist_3_2017(DataArray,LCycles,RCycles,Startframe,LeftGaitCycle,RightGaitCycle,LCycleNorm,RCycleNorm);
 end                  
 %% Run any additional code on the files (use for special Variable Codes, etc)
